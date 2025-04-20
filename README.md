@@ -15,13 +15,6 @@ This app analyzes real-time camera frames to detect and read **QR codes** and **
 - ⚡ Fast scanning with minimal resource usage
 - ✅ Prevents multiple scans per session (one-time scan lock)
 - 💡 Easy to extend for more barcode types
-
----
-
-## 📱 Screenshots
-
-> (📷 Add your screenshots here later if you want)
-
 ---
 
 ## 🧠 Tech Stack
