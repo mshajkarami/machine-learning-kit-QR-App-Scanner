@@ -2,6 +2,8 @@ package ir.hajkarami.qrappscanner;
 
 import android.annotation.SuppressLint;
 import android.graphics.Matrix;
+import android.graphics.Point;
+import android.graphics.Rect;
 import android.media.Image;
 import android.util.Size;
 import android.widget.Toast;
@@ -44,7 +46,7 @@ public class MyImageAnalyzer implements ImageAnalysis.Analyzer {
         assert image1 != null;
         InputImage inputImage = InputImage.fromMediaImage(image1, image.getImageInfo().getRotationDegrees());
         BarcodeScannerOptions scannerOptions = new BarcodeScannerOptions.Builder()
-                .setBarcodeFormats(Barcode.FORMAT_QR_CODE,Barcode.FORMAT_AZTEC)
+                .setBarcodeFormats(Barcode.FORMAT_QR_CODE, Barcode.FORMAT_AZTEC)
                 .build();
         BarcodeScanner barcodeScanner = BarcodeScanning.getClient(scannerOptions);
         Task<List<Barcode>> result = barcodeScanner.process(inputImage)
@@ -56,7 +58,7 @@ public class MyImageAnalyzer implements ImageAnalysis.Analyzer {
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(mBottomDialog.getActivity(),"Failed to read code", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mBottomDialog.getActivity(), "Failed to read code", Toast.LENGTH_SHORT).show();
                     }
                 }).addOnCompleteListener(new OnCompleteListener<List<Barcode>>() {
                     @Override
@@ -68,7 +70,29 @@ public class MyImageAnalyzer implements ImageAnalysis.Analyzer {
     }
 
     private void ReaderBarCodeData(List<Barcode> barcodes) {
+        for (Barcode barcode : barcodes) {
+            Rect bounds = barcode.getBoundingBox();
+            Point[] corners = barcode.getCornerPoints();
+            String rawValue = barcode.getRawValue();
+            int valueType = barcode.getValueType();
+            switch (valueType) {
+                case Barcode.TYPE_WIFI:
+                    String ssid = barcode.getWifi().getSsid();
+                    String password = barcode.getWifi().getPassword();
+                    int type = barcode.getWifi().getEncryptionType();
+                    break;
+                case Barcode.TYPE_URL:
+                    if (mBottomDialog.isAdded()) {
+                        mBottomDialog.show(mFragmentManager,"");
+                    }
+                    mBottomDialog.fetchUrl(rawValue);
+                    String title = barcode.getUrl().getTitle();
+                    String url = barcode.getUrl().getUrl();
+                    break;
 
+            }
+            mBottomDialog.show(mFragmentManager, rawValue);
+        }
     }
 
 }
