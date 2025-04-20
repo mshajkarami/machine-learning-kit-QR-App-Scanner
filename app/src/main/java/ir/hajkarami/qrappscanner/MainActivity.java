@@ -29,7 +29,7 @@ import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ListenableFuture cameraProviderFuture;
+    private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private ExecutorService cameraExecutor;
     private PreviewView mPreviewView;
     private MyImageAnalyzer mAnalyzer;
@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 try {
-                    if (ActivityCompat.checkSelfPermission(MainActivity.this
+                    if (ActivityCompat.checkSelfPermission(MainActivity.this,
                             Manifest.permission.CAMERA) !=
                             (PackageManager.PERMISSION_GRANTED)) {
                         ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA}, 101);
@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults, int deviceId) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == 101 && grantResults.length > 0) {
             ProcessCameraProvider processCameraProvider = null;
             try {
@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
             }
             bindpreview(processCameraProvider);
         }
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults, deviceId);
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     private void bindpreview(ProcessCameraProvider processCameraProvider) {
@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
         preview.setSurfaceProvider(mPreviewView.getSurfaceProvider());
         ImageCapture imageCapture = new ImageCapture.Builder().build();
         ImageAnalysis imageAnalysis = new ImageAnalysis.Builder()
-                .setTargetRotation(new Size(1280,720))
+                .setTargetResolution(new Size(1280, 720))
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .build();
         imageAnalysis.setAnalyzer(cameraExecutor,mAnalyzer);
