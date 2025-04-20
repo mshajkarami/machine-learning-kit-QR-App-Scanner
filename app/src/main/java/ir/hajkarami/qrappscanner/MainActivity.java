@@ -77,12 +77,10 @@ public class MainActivity extends AppCompatActivity {
             ProcessCameraProvider processCameraProvider = null;
             try {
                 processCameraProvider = (ProcessCameraProvider) cameraProviderFuture.get();
-            } catch (ExecutionException e) {
-                throw new RuntimeException(e);
-            } catch (InterruptedException e) {
+                bindpreview(processCameraProvider);
+            } catch (ExecutionException | InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            bindpreview(processCameraProvider);
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
